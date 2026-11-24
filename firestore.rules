@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // The live draft: one document, draft/state.
+    match /draft/state {
+      allow read: if true;
+      allow write: if request.resource.data.keys().hasAll(['status']);
+    }
+    // Past drafts: anyone can read, small documents only.
+    match /history/{id} {
+      allow read: if true;
+      allow create, update: if request.resource.data.keys().hasAll(['topic', 'teams'])
+                            && request.resource.data.teams.size() <= 16;
+      allow delete: if true;
+    }
+    // Everything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

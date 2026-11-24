@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mount Rushmore Draft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a loud, friendly 70s roadside game, fun first, readable always
+   IDEA: a vintage national park souvenir board game, carved granite and sunshine
+   PICTURE: layered mountain scene with four carved stone heads under a sunburst
+   COLOUR and TYPE: turquoise sky, granite grey, pine, sunshine yellow accent; Bungee + Work Sans
+   LAYOUT: scene header, big on-the-clock card, then a grid of player monuments with 4 slots each */
+:root{color-scheme:light dark;
+--sky:light-dark(#3fb8af,#0f2e36);--sky2:light-dark(#8fd8cf,#16404a);
+--sun:#ffcc33;--sunInk:#3a2a00;
+--rock:light-dark(#9aa0a8,#5d646d);--rock2:light-dark(#7c838c,#454b53);--rockHi:light-dark(#c9cdd2,#7d848d);
+--pine:light-dark(#1d4d3a,#0c2a1f);
+--bg:light-dark(#e9f6f3,#0a1d22);--card:light-dark(#ffffff,#13303a);--ink:light-dark(#13262b,#eaf4f2);--mute:light-dark(#4b6066,#9fb8bc);
+--line:light-dark(#c7dcd8,#24505b);--hot:light-dark(#d9480f,#ff8a5b)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Work Sans",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3,.bungee{font-family:Bungee,Impact,sans-serif;font-weight:400;line-height:1.05;margin:0;text-wrap:balance}
+.hero{position:relative;background:linear-gradient(var(--sky),var(--sky2));overflow:hidden}
+.hero svg{display:block;width:100%;height:clamp(200px,34vw,340px)}
+.title{position:absolute;left:0;right:0;top:clamp(12px,3vw,28px);text-align:center;padding:0 16px;pointer-events:none}
+.title h1{font-size:clamp(26px,5.4vw,52px);color:#fff;text-shadow:3px 3px 0 #1d4d3a,6px 6px 0 rgba(0,0,0,.18)}
+.title p{margin:6px auto 0;display:inline-block;background:var(--sun);color:var(--sunInk);font-weight:700;padding:3px 14px;border-radius:999px;font-size:15px;max-width:90%;overflow-wrap:anywhere}
+.wrap{max-width:1240px;margin:0 auto;padding:clamp(18px,3vw,36px) max(4vw,16px) 48px}
+.clock{background:var(--sun);color:var(--sunInk);border-radius:18px;padding:clamp(18px,3vw,30px);box-shadow:0 6px 0 #c99a00;display:grid;gap:14px}
+.clock .lbl{font-weight:700;font-size:14px;letter-spacing:.02em}
+.clock h2{font-size:clamp(30px,6vw,48px)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+input,textarea,select{font:16px "Work Sans",sans-serif;padding:12px 14px;border-radius:12px;border:2px solid #1d4d3a;background:#fff;color:#13262b;min-height:48px}
+textarea{width:100%;min-height:150px;resize:vertical}
+input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--hot);outline-offset:2px}
+.grow{flex:1 1 220px}
+button{font:16px Bungee,Impact,sans-serif;min-height:48px;padding:0 20px;border-radius:12px;border:0;cursor:pointer;background:var(--pine);color:#fff;box-shadow:0 4px 0 #0a2219}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 #0a2219}
+button[disabled]{opacity:.5;cursor:not-allowed}
+button.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--line)}
+.msg{font-weight:600;min-height:1.4em;margin:0}
+.msg.err{color:#9b1c00}
+.strip{display:flex;gap:8px;overflow-x:auto;padding:14px 2px 6px}
+.chip{flex:none;padding:6px 12px;border-radius:999px;background:var(--card);border:2px solid var(--line);font-size:14px;font-weight:600;white-space:nowrap}
+.chip.now{background:var(--hot);border-color:var(--hot);color:#fff}
+.chip.done{opacity:.45}
+h3.sec{font-size:22px;margin:28px 0 12px}
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:16px}
+.mon{background:var(--card);border-radius:16px;border:2px solid var(--line);overflow:hidden}
+.mon header{display:flex;align-items:center;gap:10px;padding:12px 14px;background:linear-gradient(var(--rockHi),var(--rock));color:#13262b}
+.mon header b{font-family:Bungee,sans-serif;font-weight:400;font-size:18px;overflow-wrap:anywhere}
+.seed{flex:none;width:34px;height:34px;border-radius:50%;background:var(--pine);color:#fff;display:grid;place-items:center;font:15px Bungee,sans-serif}
+.mon.on{border-color:var(--hot);box-shadow:0 0 0 3px var(--hot)}
+.mon ol{list-style:none;margin:0;padding:6px 14px 12px}
+.mon li{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+.mon li:last-child{border:0}
+.pk{font-size:13px;color:var(--mute);font-weight:600;white-space:nowrap}
+.mon li .t{font-weight:700;overflow-wrap:anywhere}
+.mon li.empty .t{color:var(--mute);font-weight:400;font-style:italic}
+.mon li.cur{background:color-mix(in srgb,var(--sun) 35%,transparent);margin:0 -14px;padding:8px 14px}
+.panel{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:clamp(18px,3vw,30px);display:grid;gap:14px;max-width:640px;margin:0 auto}
+.panel label{font-weight:700;display:grid;gap:6px}
+.hint{color:var(--mute);font-size:14px;margin:0}
+.tools{margin-top:36px;border-top:2px dashed var(--line);padding-top:16px}
+.tools summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
+.latest{font-size:15px;margin:0}
+.flash{animation:pop .6s ease}
+@keyframes pop{0%{transform:scale(.97)}60%{transform:scale(1.02)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.flash{animation:none}}
+.home{display:grid;gap:14px;max-width:640px;margin:0 auto}
+.big{width:100%;min-height:64px;font-size:20px}
+.big.sun{background:var(--sun);color:var(--sunInk);box-shadow:0 5px 0 #c99a00}
+.back{margin-bottom:16px}
+.list{display:grid;gap:12px}
+.past{display:grid;gap:4px;text-align:left;width:100%;min-height:0;padding:16px 18px;background:var(--card);color:var(--ink);border:2px solid var(--line);box-shadow:0 4px 0 var(--line);font:16px "Work Sans",sans-serif}
+.past b{font:20px Bungee,sans-serif;overflow-wrap:anywhere}
+.past span{color:var(--mute);font-size:14px}
+.place{flex:none;margin-left:auto;background:var(--sun);color:var(--sunInk);border-radius:999px;padding:2px 10px;font:14px Bungee,sans-serif;white-space:nowrap}
+.who{color:var(--mute);margin:6px 0 0}
+@media(max-width:600px){.clock .row>*{flex:1 1 100%}}
+</style>
+</head>
+<body>
+<div class="hero">
+  <svg viewBox="0 0 800 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <defs>
+      <g id="head">
+        <ellipse cx="0" cy="0" rx="30" ry="40" fill="var(--rock)"/>
+        <path d="M-30 0 A30 40 0 0 1 0 -40 A30 40 0 0 0 -18 10Z" fill="var(--rockHi)" opacity=".7"/>
+        <path d="M-16 -8 h11 M5 -8 h11" stroke="var(--rock2)" stroke-width="4" stroke-linecap="round"/>
+        <path d="M0 -4 v16" stroke="var(--rock2)" stroke-width="3" stroke-linecap="round"/>
+        <path d="M-9 22 q9 5 18 0" stroke="var(--rock2)" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </g>
+      <path id="pine" d="M0 -46 L14 -18 H7 L20 6 H-20 L-7 -18 H-14Z" fill="var(--pine)"/>
+    </defs>
+    <g opacity=".35" fill="#fff">
+      <path d="M400 250 L250 -40 L300 -40Z"/><path d="M400 250 L480 -40 L540 -40Z"/><path d="M400 250 L80 -20 L130 -60Z"/><path d="M400 250 L700 -60 L760 -10Z"/>
+    </g>
+    <circle cx="400" cy="250" r="120" fill="var(--sun)" opacity=".85"/>
+    <path d="M0 230 L120 150 L210 200 L300 140 L400 180 L520 130 L620 190 L720 150 L800 190 V300 H0Z" fill="var(--rock2)" opacity=".6"/>
+    <path d="M200 300 L250 170 Q300 120 360 140 Q420 110 480 135 Q540 120 570 175 L620 300Z" fill="var(--rock2)"/>
+    <path d="M250 170 Q300 120 360 140 L330 300 H210Z" fill="var(--rockHi)" opacity=".35"/>
+    <use href="#head" x="300" y="200"/><use href="#head" x="370" y="185"/><use href="#head" x="440" y="190"/><use href="#head" x="510" y="205"/>
+    <path d="M0 300 V262 Q200 236 400 258 T800 250 V300Z" fill="var(--pine)"/>
+    <g><use href="#pine" x="40" y="270"/><use href="#pine" x="80" y="282"/><use href="#pine" x="130" y="268"/><use href="#pine" x="660" y="272"/><use href="#pine" x="710" y="262"/><use href="#pine" x="760" y="280"/><use href="#pine" x="190" y="290"/><use href="#pine" x="610" y="292"/></g>
+  </svg>
+  <div class="title"><h1>Mount Rushmore Draft</h1><p id="topic">Snake draft · 4 picks each</p></div>
+</div>
+
+<main class="wrap" id="app" aria-live="polite">
+  <p class="msg" id="boot">Loading the mountain…</p>
+</main>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
